@@ -1,6 +1,6 @@
 /vendor
 /nbproject
-/tmp
+/tmp/*
 composer.lock
 config.ini
 !.dummy

@@ -1,0 +1,9 @@
+[app]
+email = 
+[facebook]
+app_id = 
+app_secret = 
+default_graph_version = v2.4
+[groups]
+id[] = 411010232285957
+id[] = 255049338000359

@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Facebook;
 use Nette\Utils;
+use Nette\Mail;
 
 class Watcher 
 {
@@ -68,6 +69,21 @@ class Watcher
 					$matchingQueue[] = $post;
 				}
 			}
+		}
+
+		$mailer = new Mail\SendmailMailer();
+		foreach($matchingQueue as $post) {
+			$ids = explode('_', $post['id']);
+			$link = sprintf('https://www.facebook.com/groups/%s/permalink/%s', $ids[0], $ids[1]);
+			$title = explode("\n", $post['message'])[0];
+			$mail = new Mail\Message();
+			foreach($this->config['app']['email_to'] as $email) {
+				$mail->addTo($email);
+			}
+			$mail->setFrom($this->config['app']['email_from'])
+				->setSubject(Utils\Strings::toAscii($title))
+				->setHtmlBody(sprintf('<a href="%s">%s</a>', $link, $title));
+			$mailer->send($mail);
 		}
 
 		$h = fopen(__DIR__ . '/../../tmp/last_run.pid', 'w');

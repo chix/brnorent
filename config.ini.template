@@ -1,5 +1,6 @@
 [app]
-email = 
+email_from = 
+email_to[] = 
 [facebook]
 app_id = 
 app_secret = 

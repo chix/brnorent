@@ -6,6 +6,6 @@
 		"nette/mail" : "v2.3.2"
 	},
 	"autoload": {
-		"psr-4": {"App\\": "app/"}
+		"psr-4": {"App\\": "App/"}
 	}
 }

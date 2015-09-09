@@ -1,0 +1,6 @@
+/vendor
+/nbproject
+/tmp
+composer.lock
+config.ini
+!.dummy

@@ -7,3 +7,20 @@ default_graph_version = v2.4
 [groups]
 id[] = 411010232285957
 id[] = 255049338000359
+[keywords]
+include[] = byt
+include[] = 1+kk
+include[] = 1+1
+include[] = 2+1
+include[] = 2+kk
+exclude[] = hledam
+exclude[] = pokoj
+exclude[] = spolubydleni
+exclude[] = spolubydlici
+exclude[] = misto 
+exclude[] = mista
+exclude[] = holka
+exclude[] = holky
+exclude[] = holku
+exclude[] = kluk
+exclude[] = kluci

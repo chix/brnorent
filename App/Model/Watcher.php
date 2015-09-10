@@ -11,7 +11,8 @@ class Watcher
 	protected $config = null;
 	/** @var Facebook\Facebook */
 	protected $facebook = null;
-	protected $lastRunTimestamp = null;
+	/** @var \DibiConnection */
+	protected $dibi = null;
 
 	protected function init()
 	{
@@ -25,15 +26,17 @@ class Watcher
 
 		$this->facebook = new Facebook\Facebook($config['facebook']);
 
-		$pidFilePath = __DIR__ . '/../../tmp/last_run.pid';
-		if (file_exists($pidFilePath)) {
-			$this->lastRunTimestamp = intval(file_get_contents($pidFilePath));
-		}
+		$this->dibi = new \DibiConnection(array(
+			'driver' => 'sqlite3',
+			'database' => __DIR__ . '/../../tmp/db.sdb'
+		));
 	}
 
 	protected function isMatchingPost($post)
 	{
-		if (strtotime($post['updated_time']) < $this->lastRunTimestamp) {
+		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
+		$postExists = $this->dibi->query('SELECT * FROM posts WHERE id = ?', $post['id'])->fetch();
+		if ($postExists || !isset($post['message'])) {
 			return false;
 		}
 			
@@ -84,11 +87,9 @@ class Watcher
 				->setSubject(Utils\Strings::toAscii($title))
 				->setHtmlBody(sprintf('<a href="%s">%s</a>', $link, $title));
 			$mailer->send($mail);
-		}
 
-		$h = fopen(__DIR__ . '/../../tmp/last_run.pid', 'w');
-		fwrite($h, time());
-		fclose($h);
+			$this->dibi->query('INSERT INTO posts', array('id' => $post['id']));
+		}
 	}
 
 }

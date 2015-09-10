@@ -3,7 +3,8 @@
 		"symfony/console": "v2.7.4",
 		"facebook/php-sdk-v4" : "~5.0",
 		"nette/utils" : "v2.3.4",
-		"nette/mail" : "v2.3.2"
+		"nette/mail" : "v2.3.2",
+		"dibi/dibi" : "v2.3.2"
 	},
 	"autoload": {
 		"psr-4": {"App\\": "App/"}

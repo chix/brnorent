@@ -78,14 +78,16 @@ class Watcher
 		foreach($matchingQueue as $post) {
 			$ids = explode('_', $post['id']);
 			$link = sprintf('https://www.facebook.com/groups/%s/permalink/%s', $ids[0], $ids[1]);
-			$title = explode("\n", $post['message'])[0];
+			$messageLines = explode("\n", $post['message']);
+			$title = array_shift($messageLines);
+
 			$mail = new Mail\Message();
 			foreach($this->config['app']['email_to'] as $email) {
 				$mail->addTo($email);
 			}
 			$mail->setFrom($this->config['app']['email_from'])
 				->setSubject(Utils\Strings::toAscii($title))
-				->setHtmlBody(sprintf('<a href="%s">%s</a>', $link, $title));
+				->setHtmlBody(sprintf('<a href="%s">%s</a><br>%s', $link, $title, implode('<br>', $messageLines)));
 			$mailer->send($mail);
 
 			$this->dibi->query('INSERT INTO posts', array('id' => $post['id']));

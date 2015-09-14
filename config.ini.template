@@ -4,11 +4,8 @@ email_to[] =
 [facebook]
 app_id = 
 app_secret = 
-default_graph_version = v2.4
-[groups]
-id[] = 411010232285957
-id[] = 255049338000359
-[keywords]
+group_id[] = 411010232285957
+group_id[] = 255049338000359
 include[] = byt
 include[] = 1+kk
 include[] = 1+1
@@ -25,3 +22,5 @@ exclude[] = holky
 exclude[] = holku
 exclude[] = kluk
 exclude[] = kluci
+[bezrealitky]
+url = "http://www.bezrealitky.cz/vypis?advertoffertype=nabidka-pronajem&estatetype=byt&region=jihomoravsky-kraj&county=okres-brno-mesto&disposition=0&priceTo=12000&order=time_order_desc"

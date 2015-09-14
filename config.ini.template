@@ -24,3 +24,7 @@ exclude[] = kluk
 exclude[] = kluci
 [bezrealitky]
 url = "http://www.bezrealitky.cz/vypis?advertoffertype=nabidka-pronajem&estatetype=byt&region=jihomoravsky-kraj&county=okres-brno-mesto&disposition=0&priceTo=12000&order=time_order_desc"
+[bazos]
+url[] = "http://reality.bazos.cz/pronajmu/garsoniera/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
+url[] = "http://reality.bazos.cz/pronajmu/byt-1-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
+url[] = "http://reality.bazos.cz/pronajmu/byt-2-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"

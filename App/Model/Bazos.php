@@ -18,7 +18,7 @@ class Bazos implements ICrawler
 		$this->config = $config;
 
 		if (!isset($this->config['bazos'])) {
-			throw new \Exception("Could not init the bezrealitky crawler, config is missing.");
+			throw new \Exception("Could not init the bazos crawler, config is missing.");
 		}
 
 		foreach ($config['bazos']['url'] as $url) {

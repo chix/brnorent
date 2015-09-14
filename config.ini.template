@@ -28,3 +28,5 @@ url = "http://www.bezrealitky.cz/vypis?advertoffertype=nabidka-pronajem&estatety
 url[] = "http://reality.bazos.cz/pronajmu/garsoniera/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
 url[] = "http://reality.bazos.cz/pronajmu/byt-1-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
 url[] = "http://reality.bazos.cz/pronajmu/byt-2-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
+[sreality]
+url = "http://www.sreality.cz/api/cs/v1/estates/rss?category_main_cb=1&locality_district_id=72&category_sub_cb=2|3|4|5&czk_price_summary_order2=0|12000&locality_region_id=14&category_type_cb=2"

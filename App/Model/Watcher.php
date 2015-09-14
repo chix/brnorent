@@ -24,9 +24,10 @@ class Watcher
 		));
 		$dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
 
-		//$this->crawlers['facebook'] = new FacebookGroups($dibi, $config);
-		//$this->crawlers['bezrealitky'] = new Bezrealitky($dibi, $config);
+		$this->crawlers['facebook'] = new FacebookGroups($dibi, $config);
+		$this->crawlers['bezrealitky'] = new Bezrealitky($dibi, $config);
 		$this->crawlers['bazos'] = new Bazos($dibi, $config);
+		$this->crawlers['sreality'] = new Sreality($dibi, $config);
 	}
 
 	public function run()

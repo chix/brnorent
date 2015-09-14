@@ -29,6 +29,7 @@ class Watcher
 		$this->crawlers['bazos'] = new Bazos($dibi, $config);
 		$this->crawlers['sreality'] = new Sreality($dibi, $config);
 		$this->crawlers['idnes'] = new Idnes($dibi, $config);
+		$this->crawlers['ismuni'] = new IsMuni($dibi, $config);
 	}
 
 	public function run()

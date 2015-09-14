@@ -6,27 +6,22 @@ app_id =
 app_secret = 
 group_id[] = 411010232285957
 group_id[] = 255049338000359
-include[] = byt
-include[] = 1+kk
-include[] = 1+1
-include[] = 2+1
-include[] = 2+kk
 exclude[] = hledam
 exclude[] = pokoj
 exclude[] = spolubydleni
 exclude[] = spolubydlici
-exclude[] = misto 
-exclude[] = mista
 exclude[] = holka
 exclude[] = holky
 exclude[] = holku
 exclude[] = kluk
 exclude[] = kluci
 [bezrealitky]
-url = "http://www.bezrealitky.cz/vypis?advertoffertype=nabidka-pronajem&estatetype=byt&region=jihomoravsky-kraj&county=okres-brno-mesto&disposition=0&priceTo=12000&order=time_order_desc"
+url = "http://www.bezrealitky.cz/vypis?advertoffertype=nabidka-pronajem&estatetype=byt&region=jihomoravsky-kraj&county=okres-brno-mesto&disposition=0&priceTo=10000&order=time_order_desc"
 [bazos]
-url[] = "http://reality.bazos.cz/pronajmu/garsoniera/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
-url[] = "http://reality.bazos.cz/pronajmu/byt-1-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
-url[] = "http://reality.bazos.cz/pronajmu/byt-2-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=12000"
+url[] = "http://reality.bazos.cz/pronajmu/garsoniera/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=10000"
+url[] = "http://reality.bazos.cz/pronajmu/byt-1-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=10000"
+url[] = "http://reality.bazos.cz/pronajmu/byt-2-1/?hledat=&rubriky=reality&hlokalita=brno&humkreis=10&cenaod=&cenado=10000"
 [sreality]
-url = "http://www.sreality.cz/api/cs/v1/estates/rss?category_main_cb=1&locality_district_id=72&category_sub_cb=2|3|4|5&czk_price_summary_order2=0|12000&locality_region_id=14&category_type_cb=2"
+url = "http://www.sreality.cz/api/cs/v1/estates/rss?category_main_cb=1&locality_district_id=72&category_sub_cb=2|3|4|5&czk_price_summary_order2=0|10000&locality_region_id=14&category_type_cb=2"
+[idnes]
+url = "http://reality.idnes.cz/s/pronajem/byty/do-10000-za-mesic/brno-mesto/"

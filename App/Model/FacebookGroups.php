@@ -37,7 +37,7 @@ class FacebookGroups implements ICrawler
 			return false;
 		}
 			
-		if (isset($this->config['facebook']['exclude']) && $this->config['facebook']['include']) {
+		if (isset($this->config['facebook']['exclude'])) {
 			$title = Utils\Strings::toAscii(explode("\n", $post['message'])[0]);
 
 			foreach($this->config['facebook']['exclude'] as $excludingKeyword) {
@@ -45,17 +45,9 @@ class FacebookGroups implements ICrawler
 					return false;
 				}
 			}
-
-			foreach($this->config['facebook']['include'] as $includingKeyword) {
-				if (stristr($title, $includingKeyword) !== false) {
-					return true;
-				}
-			}
-
-			return false;
-		} else {
-			return true;
 		}
+
+		return true;
 	}
 
 	public function getNewPosts()

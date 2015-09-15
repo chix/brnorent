@@ -6,7 +6,11 @@ use Nette\Mail;
 
 class Watcher 
 {
+	use FilterTrait;
+
 	protected $config = null;
+	/** @var \DibiConnection */
+	protected $dibi = null;
 	/** @var ICrawler[] */
 	protected $crawlers = array();
 
@@ -18,43 +22,47 @@ class Watcher
 		}
 		$this->config = $config;
 
-		$dibi = new \DibiConnection(array(
+		$this->dibi = new \DibiConnection(array(
 			'driver' => 'sqlite3',
 			'database' => __DIR__ . '/../../tmp/db.sdb'
 		));
-		$dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
+		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
 
-		$this->crawlers['facebook'] = new FacebookGroups($dibi, $config);
-		$this->crawlers['bezrealitky'] = new Bezrealitky($dibi, $config);
-		$this->crawlers['bazos'] = new Bazos($dibi, $config);
-		$this->crawlers['sreality'] = new Sreality($dibi, $config);
-		$this->crawlers['idnes'] = new Idnes($dibi, $config);
-		$this->crawlers['ismuni'] = new IsMuni($dibi, $config);
+		$this->crawlers['facebook'] = new FacebookGroups($this->dibi, $config['facebook']);
+		$this->crawlers['bezrealitky'] = new Bezrealitky($this->dibi, $config['bezrealitky']);
+		$this->crawlers['bazos'] = new Bazos($this->dibi, $config['bazos']);
+		$this->crawlers['sreality'] = new Sreality($this->dibi, $config['sreality']);
+		$this->crawlers['idnes'] = new Idnes($this->dibi, $config['idnes']);
+		$this->crawlers['ismuni'] = new IsMuni($this->dibi, $config['ismuni']);
 	}
 
 	public function run()
 	{
 		$this->init();
 
-		$count = 0;
+		$seen = array();
 		$notification = '';
-		foreach ($this->crawlers as $crawler) {
+		foreach ($this->crawlers as $code => $crawler) {
 			foreach ($crawler->getNewPosts() as $post) {
-				$notification .= sprintf('<h3><a href="%s">%s</a></h3><br>%s<br><br>', $post['url'], $post['title'], $post['message']);
-				$count += 1;
+				$notification .= sprintf('<h3>[%s] <a href="%s">%s</a></h3><br>%s<br><br>', $code, $post['url'], $post['title'], $post['message']);
+				$seen[] = $post['url'];
 			}
 		}
 
-		if ($count) {
+		if (!empty($seen)) {
 			$mailer = new Mail\SendmailMailer();
 			$mail = new Mail\Message();
 			foreach($this->config['app']['email_to'] as $email) {
 				$mail->addTo($email);
 			}
 			$mail->setFrom($this->config['app']['email_from'])
-				->setSubject(sprintf('%d new rent offer(s)', $count))
+				->setSubject(sprintf('%d new rent offer%s', count($seen), ((count($seen) > 1) ? 's' : '')))
 				->setHtmlBody($notification);
 			$mailer->send($mail);
+		}
+
+		foreach($seen as $url) {
+			$this->dibi->query('INSERT INTO posts', array('id' => $url));
 		}
 	}
 

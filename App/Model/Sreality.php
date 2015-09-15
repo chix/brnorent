@@ -2,8 +2,10 @@
 
 namespace App\Model;
 
-class Sreality implements ICrawler
+class Sreality implements CrawlerInterface
 {
+	use FilterTrait;
+
 	protected $config = null;
 	/** @var \SimpleXMLElement */
 	protected $xml = null;
@@ -15,22 +17,7 @@ class Sreality implements ICrawler
 		$this->dibi = $dibi;
 		$this->config = $config;
 
-		if (!isset($this->config['sreality'])) {
-			throw new \Exception("Could not init the sreality crawler, config is missing.");
-		}
-
-		$this->xml = simplexml_load_file($config['sreality']['url']);
-	}
-
-	private function isNewPost($id)
-	{
-		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
-		$postExists = $this->dibi->query('SELECT * FROM posts WHERE id = ?', $id)->fetch();
-		if ($postExists) {
-			return false;
-		}
-
-		return true;
+		$this->xml = simplexml_load_file($config['url']);
 	}
 
 	public function getNewPosts()
@@ -39,16 +26,14 @@ class Sreality implements ICrawler
 
 		foreach ($this->xml->xpath('//item') as $xmlElement) {
 			$url = (string)$xmlElement->link;
-			if ($this->isNewPost($url)) {
-				$title = (string)$xmlElement->title;
-				$description = (string)$xmlElement->description;
-				$newPosts[] = array(
-					'url' => $url,
-					'title' => $title . ', ' . $description,
-					'message' => ''
-				);
-				$this->dibi->query('INSERT INTO posts', array('id' => $url));
-			}
+			$title = (string)$xmlElement->title . ', ' . (string)$xmlElement->description;
+			if (!$this->isNewAndMatchingPost($url, $title)) continue;
+
+			$newPosts[] = array(
+				'url' => $url,
+				'title' => $title,
+				'message' => ''
+			);
 		}
 
 		return $newPosts;

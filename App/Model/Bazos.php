@@ -4,8 +4,10 @@ namespace App\Model;
 
 use Sunra\PhpSimple\HtmlDomParser;
 
-class Bazos implements ICrawler
+class Bazos implements CrawlerInterface
 {
+	use FilterTrait;
+
 	protected $config = null;
 	/** @var HtmlDomParser[] */
 	protected $parsers = array();
@@ -17,24 +19,9 @@ class Bazos implements ICrawler
 		$this->dibi = $dibi;
 		$this->config = $config;
 
-		if (!isset($this->config['bazos'])) {
-			throw new \Exception("Could not init the bazos crawler, config is missing.");
-		}
-
-		foreach ($config['bazos']['url'] as $url) {
+		foreach ($config['url'] as $url) {
 			$this->parsers[] = HtmlDomParser::file_get_html($url);
 		}
-	}
-
-	private function isNewPost($id)
-	{
-		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
-		$postExists = $this->dibi->query('SELECT * FROM posts WHERE id = ?', $id)->fetch();
-		if ($postExists) {
-			return false;
-		}
-
-		return true;
 	}
 
 	public function getNewPosts()
@@ -44,17 +31,16 @@ class Bazos implements ICrawler
 		foreach ($this->parsers as $parser) {
 			foreach ($parser->find('table.inzeraty') as $node) {
 				$url = 'http://reality.bazos.cz' . trim($node->find('span.nadpis a', 0)->href);
-				if ($this->isNewPost($url)) {
-					$title = trim($node->find('span.nadpis a', 0)->innertext);
-					$price = trim($node->find('span.cena b', 0)->innertext);
-					$message = trim($node->find('div.popis', 0)->innertext);
-					$newPosts[] = array(
-						'url' => $url,
-						'title' => $title . ', ' . $price,
-						'message' => $message
-					);
-					$this->dibi->query('INSERT INTO posts', array('id' => $url));
-				}
+				$title = trim($node->find('span.nadpis a', 0)->innertext);
+				if (!$this->isNewAndMatchingPost($url, $title)) continue;
+
+				$price = trim($node->find('span.cena b', 0)->innertext);
+				$message = trim($node->find('div.popis', 0)->innertext);
+				$newPosts[] = array(
+					'url' => $url,
+					'title' => $title . ', ' . $price,
+					'message' => $message
+				);
 			}
 		}
 

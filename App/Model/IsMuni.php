@@ -2,10 +2,10 @@
 
 namespace App\Model;
 
-use Nette\Utils;
-
-class IsMuni implements ICrawler
+class IsMuni implements CrawlerInterface
 {
+	use FilterTrait;
+
 	protected $config = null;
 	/** @var \SimpleXMLElement[] */
 	protected $xml = array();
@@ -17,32 +17,9 @@ class IsMuni implements ICrawler
 		$this->dibi = $dibi;
 		$this->config = $config;
 
-		if (!isset($this->config['ismuni'])) {
-			throw new \Exception("Could not init the IS muni crawler, config is missing.");
-		}
-
-		foreach ($config['ismuni']['url'] as $url) {
+		foreach ($config['url'] as $url) {
 			$this->xml[] = simplexml_load_file($url);
 		}
-	}
-
-	private function isNewAndMatchingPost($id, $title)
-	{
-		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
-		$postExists = $this->dibi->query('SELECT * FROM posts WHERE id = ?', $id)->fetch();
-		if ($postExists) {
-			return false;
-		}
-
-		if (isset($this->config['ismuni']['exclude'])) {
-			foreach($this->config['ismuni']['exclude'] as $excludingKeyword) {
-				if (stristr(Utils\Strings::toAscii($title), $excludingKeyword) !== false) {
-					return false;
-				}
-			}
-		}
-
-		return true;
 	}
 
 	public function getNewPosts()
@@ -53,16 +30,14 @@ class IsMuni implements ICrawler
 			foreach ($xml->xpath('//item') as $xmlElement) {
 				$url = (string)$xmlElement->link;
 				$title = (string)$xmlElement->title;
-				if ($this->isNewAndMatchingPost($url, $title)) {
-					$title = (string)$xmlElement->title;
-					$description = (string)$xmlElement->description;
-					$newPosts[] = array(
-						'url' => $url,
-						'title' => $title,
-						'message' => $description
-					);
-					$this->dibi->query('INSERT INTO posts', array('id' => $url));
-				}
+				$description = (string)$xmlElement->description;
+				if (!$this->isNewAndMatchingPost($url, $title)) continue;
+
+				$newPosts[] = array(
+					'url' => $url,
+					'title' => $title,
+					'message' => $description
+				);
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-interface ICrawler
+interface CrawlerInterface
 {
 	public function getNewPosts();
 }

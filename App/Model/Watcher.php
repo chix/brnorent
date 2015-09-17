@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Nette\Mail;
+use Katzgrau\KLogger;
 
 class Watcher 
 {
@@ -13,6 +14,13 @@ class Watcher
 	protected $dibi = null;
 	/** @var ICrawler[] */
 	protected $crawlers = array();
+	/** @var KLogger\Logger */
+	protected $logger = null;
+
+	public function __construct(KLogger\Logger $logger)
+	{
+		$this->logger = $logger;
+	}
 
 	protected function init()
 	{
@@ -28,12 +36,12 @@ class Watcher
 		));
 		$this->dibi->query('CREATE TABLE IF NOT EXISTS posts (id TEXT)');
 
-		$this->crawlers['facebook'] = new FacebookGroups($this->dibi, $config['facebook']);
-		$this->crawlers['bezrealitky'] = new Bezrealitky($this->dibi, $config['bezrealitky']);
-		$this->crawlers['bazos'] = new Bazos($this->dibi, $config['bazos']);
-		$this->crawlers['sreality'] = new Sreality($this->dibi, $config['sreality']);
-		$this->crawlers['idnes'] = new Idnes($this->dibi, $config['idnes']);
-		$this->crawlers['ismuni'] = new IsMuni($this->dibi, $config['ismuni']);
+		$this->crawlers['facebook'] = new FacebookGroups($this->dibi, $this->logger, $config['facebook']);
+		$this->crawlers['bezrealitky'] = new Bezrealitky($this->dibi, $this->logger, $config['bezrealitky']);
+		$this->crawlers['bazos'] = new Bazos($this->dibi, $this->logger, $config['bazos']);
+		$this->crawlers['sreality'] = new Sreality($this->dibi, $this->logger, $config['sreality']);
+		$this->crawlers['idnes'] = new Idnes($this->dibi, $this->logger, $config['idnes']);
+		$this->crawlers['ismuni'] = new IsMuni($this->dibi, $this->logger, $config['ismuni']);
 	}
 
 	public function run()

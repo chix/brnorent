@@ -2,20 +2,18 @@
 
 namespace App\Model;
 
-class IsMuni implements CrawlerInterface
+use Katzgrau\KLogger;
+
+class IsMuni extends CrawlerBase implements CrawlerInterface
 {
 	use FilterTrait;
 
-	protected $config = null;
 	/** @var \SimpleXMLElement[] */
 	protected $xml = array();
-	/** @var \DibiConnection */
-	protected $dibi = null;
 
-	public function __construct(\DibiConnection $dibi, array $config)
+	public function __construct(\DibiConnection $dibi, KLogger\Logger $logger, array $config)
 	{
-		$this->dibi = $dibi;
-		$this->config = $config;
+		parent::__construct($dibi, $logger, $config);
 
 		foreach ($config['url'] as $url) {
 			$this->xml[] = simplexml_load_file($url);
@@ -27,7 +25,11 @@ class IsMuni implements CrawlerInterface
 		$newPosts = array();
 
 		foreach($this->xml as $xml) {
-			foreach ($xml->xpath('//item') as $xmlElement) {
+			$nodes = (array)$xml->xpath('//item');
+			if (empty($nodes)) {
+				$this->logger->warning('Empty nodes array', array(__CLASS__));
+			}
+			foreach ($nodes as $xmlElement) {
 				$url = (string)$xmlElement->link;
 				$title = (string)$xmlElement->title;
 				$description = (string)$xmlElement->description;

@@ -2,20 +2,18 @@
 
 namespace App\Model;
 
-class Sreality implements CrawlerInterface
+use Katzgrau\KLogger;
+
+class Sreality extends CrawlerBase implements CrawlerInterface
 {
 	use FilterTrait;
 
-	protected $config = null;
 	/** @var \SimpleXMLElement */
 	protected $xml = null;
-	/** @var \DibiConnection */
-	protected $dibi = null;
 
-	public function __construct(\DibiConnection $dibi, array $config)
+	public function __construct(\DibiConnection $dibi, KLogger\Logger $logger, array $config)
 	{
-		$this->dibi = $dibi;
-		$this->config = $config;
+		parent::__construct($dibi, $logger, $config);
 
 		$this->xml = simplexml_load_file($config['url']);
 	}
@@ -24,7 +22,11 @@ class Sreality implements CrawlerInterface
 	{
 		$newPosts = array();
 
-		foreach ($this->xml->xpath('//item') as $xmlElement) {
+		$nodes = (array)$this->xml->xpath('//item');
+		if (empty($nodes)) {
+			$this->logger->warning('Empty nodes array', array(__CLASS__));
+		}
+		foreach ($nodes as $xmlElement) {
 			$url = (string)$xmlElement->link;
 			$title = (string)$xmlElement->title . ', ' . (string)$xmlElement->description;
 			if (!$this->isNewAndMatchingPost($url, $title)) continue;

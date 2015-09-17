@@ -3,21 +3,18 @@
 namespace App\Model;
 
 use Sunra\PhpSimple\HtmlDomParser;
+use Katzgrau\KLogger;
 
-class Idnes implements CrawlerInterface
+class Idnes extends CrawlerBase implements CrawlerInterface
 {
 	use FilterTrait;
 
-	protected $config = null;
 	/** @var HtmlDomParser */
 	protected $parser = null;
-	/** @var \DibiConnection */
-	protected $dibi = null;
 
-	public function __construct(\DibiConnection $dibi, array $config)
+	public function __construct(\DibiConnection $dibi, KLogger\Logger $logger, array $config)
 	{
-		$this->dibi = $dibi;
-		$this->config = $config;
+		parent::__construct($dibi, $logger, $config);
 
 		$this->parser = HtmlDomParser::file_get_html($config['url']);
 	}
@@ -26,7 +23,11 @@ class Idnes implements CrawlerInterface
 	{
 		$newPosts = array();
 
-		foreach ($this->parser->find('div.nemo-info') as $node) {
+		$nodes = (array)$this->parser->find('div.nemo-info');
+		if (empty($nodes)) {
+			$this->logger->warning('Empty nodes array', array(__CLASS__));
+		}
+		foreach ($nodes as $node) {
 			$url = 'http://reality.idnes.cz' . trim($node->find('h3 a', 0)->href);
 			$title = iconv('windows-1250', 'utf-8', trim($node->find('h3 a', 0)->innertext));
 			$price = iconv('windows-1250', 'utf-8', trim(strip_tags($node->parent()->parent()->find('td.price', 0)->innertext)));

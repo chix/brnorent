@@ -3,21 +3,18 @@
 namespace App\Model;
 
 use Sunra\PhpSimple\HtmlDomParser;
+use Katzgrau\KLogger;
 
-class Bezrealitky implements CrawlerInterface
+class Bezrealitky extends CrawlerBase implements CrawlerInterface
 {
 	use FilterTrait;
 
-	protected $config = null;
 	/** @var HtmlDomParser */
 	protected $parser = null;
-	/** @var \DibiConnection */
-	protected $dibi = null;
 
-	public function __construct(\DibiConnection $dibi, array $config)
+	public function __construct(\DibiConnection $dibi, KLogger\Logger $logger, array $config)
 	{
-		$this->dibi = $dibi;
-		$this->config = $config;
+		parent::__construct($dibi, $logger, $config);
 
 		$this->parser = HtmlDomParser::file_get_html($config['url']);
 	}
@@ -26,7 +23,11 @@ class Bezrealitky implements CrawlerInterface
 	{
 		$newPosts = array();
 
-		foreach ($this->parser->find('div.list div.record div.details') as $node) {
+		$nodes = (array)$this->parser->find('div.list div.record div.details');
+		if (empty($nodes)) {
+			$this->logger->warning('Empty nodes array', array(__CLASS__));
+		}
+		foreach ($nodes as $node) {
 			$url = trim($node->find('p.short-url', 0)->innertext);
 			$iconToRemove = trim($node->find('h2 a i', 0)->outertext);
 			$address = trim(str_replace($iconToRemove, '', $node->find('h2 a', 0)->innertext));

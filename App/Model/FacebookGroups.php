@@ -3,21 +3,18 @@
 namespace App\Model;
 
 use Facebook;
+use Katzgrau\KLogger;
 
-class FacebookGroups implements CrawlerInterface
+class FacebookGroups extends CrawlerBase implements CrawlerInterface
 {
 	use FilterTrait;
 
-	protected $config = null;
 	/** @var Facebook\Facebook */
 	protected $facebook = null;
-	/** @var \DibiConnection */
-	protected $dibi = null;
 
-	public function __construct(\DibiConnection $dibi, array $config)
+	public function __construct(\DibiConnection $dibi, KLogger\Logger $logger, array $config)
 	{
-		$this->dibi = $dibi;
-		$this->config = $config;
+		parent::__construct($dibi, $logger, $config);
 
 		$this->facebook = new Facebook\Facebook(array(
 			'app_id' => $this->config['app_id'],
@@ -31,11 +28,18 @@ class FacebookGroups implements CrawlerInterface
 		$newPosts = array();
 
 		foreach($this->config['group_id'] as $groupId) {
-			$response = $this->facebook->get(
-				sprintf('/%s/feed', $groupId),
-				$this->facebook->getApp()->getAccessToken()
-			);
-			foreach((array)$response->getDecodedBody()['data'] as $post) {
+			$posts = array();
+			try {
+				$response = $this->facebook->get(
+					sprintf('/%s/feed', $groupId),
+					$this->facebook->getApp()->getAccessToken()
+				);
+				$posts += (array)$response->getDecodedBody()['data'];
+			} catch (\Exception $e) {
+				$this->logger->warning($e->getMessage(), array(__CLASS__));
+			}
+
+			foreach($posts as $post) {
 				if (!isset($post['message'])) continue;
 				$ids = explode('_', $post['id']);
 				$url = sprintf('https://www.facebook.com/groups/%s/permalink/%s', $ids[0], $ids[1]);
